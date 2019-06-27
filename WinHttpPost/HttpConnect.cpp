@@ -31,7 +31,7 @@ HttpConnect::~HttpConnect()
 
 void HttpConnect::socketHttp(std::string host, std::string request)
 {
-	int sockfd;
+	SOCKET sockfd;
 	struct sockaddr_in address;
 	struct hostent *server;
 
@@ -45,10 +45,11 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 		cout << "connection error!" << std::endl;
 		return;
 	}
-
-	cout << request << std::endl;
+	//post get 提交信息
+	//cout << "提交信息" << std::endl;
+	//cout << request << std::endl;  
 #ifdef WIN32
-	send(sockfd, request.c_str(), request.size(), 0);
+	send(sockfd, request.c_str(), (int)request.size(), 0);
 #else
 	write(sockfd, request.c_str(), request.size());
 #endif
@@ -58,7 +59,9 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 
 	int offset = 0;
 	int rc;
-
+	cout << "======================================" << std::endl;
+	 
+	cout << "返回信息" << std::endl;
 #ifdef WIN32
 	while (rc = recv(sockfd, buf + offset, 1024, 0))
 #else
@@ -74,8 +77,31 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 	close(sockfd);
 #endif
 	buf[offset] = 0;
-	cout << buf << std::endl;
+	//post get 提交后返回来的信息
+	//cout << buf << endl; 
+	string  a = buf;
+	string chstr = "authfailed";
+	int offisetpre =(int) a.find("#", 0);/*从前向后找*/
+	int offisetpre2 = (int)a.find(chstr, 0);/*从前向后找*/
+	//cout << "aaaaa: " << offisetpre << endl;
 
+	//void *isfind, *isfindstr;
+	//isfind = memchr(buf, '%', sizeof(buf));
+	//isfindstr = memchr(buf, 'fail', sizeof(buf));
+
+
+
+	//cout << "isfind" << isfind << endl;
+	//cout << "isfindstr" << isfindstr << endl;
+
+	if ((-1 == offisetpre) || (-1 == offisetpre2))
+	{
+		cout << "登录OK" << std::endl;
+	}
+	else
+	{
+		cout << "用户或密码错误无法登录" << std::endl;
+	}
 	delete[]buf;
 }
 
