@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "HttpConnect.h"
 
 #include <stdio.h>
@@ -17,7 +17,7 @@ using namespace std;
 HttpConnect::HttpConnect()
 {
 #ifdef WIN32
-	//´Ë´¦Ò»¶¨Òª³õÊ¼»¯Ò»ÏÂ£¬·ñÔògethostbyname·µ»ØÒ»Ö±Îª¿Õ
+	//æ­¤å¤„ä¸€å®šè¦åˆå§‹åŒ–ä¸€ä¸‹ï¼Œå¦åˆ™gethostbynameè¿”å›ä¸€ç›´ä¸ºç©º
 	WSADATA wsa = { 0 };
 	WSAStartup(MAKEWORD(2, 2), &wsa);
 #endif
@@ -31,11 +31,17 @@ HttpConnect::~HttpConnect()
 
 void HttpConnect::socketHttp(std::string host, std::string request)
 {
+
 	SOCKET sockfd;
 	struct sockaddr_in address;
 	struct hostent *server;
-
+	cout << request << std::endl;
+	cout << "-------------" << std::endl;
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	//æ³¨ï¼šAF_INETï¼ˆåˆç§° PF_INETï¼‰æ˜¯ IPv4 ç½‘ç»œåè®®çš„å¥—æ¥å­—ç±»å‹ï¼ŒAF_INET6 åˆ™æ˜¯ IPv6 çš„ï¼›è€Œ AF_UNIX åˆ™æ˜¯ Unix ç³»ç»Ÿæœ¬åœ°é€šä¿¡ã€‚
+	//SOCK_STREAMï¼ˆTCPæµï¼‰
+	//SOCK_DGRAMï¼ˆUDPæ•°æ®æŠ¥ï¼‰
+	//SOCK_RAWï¼ˆåŸå§‹å¥—æ¥å­—ï¼‰
 	address.sin_family = AF_INET;
 	address.sin_port = htons(80);
 	server = gethostbyname(host.c_str());
@@ -45,13 +51,21 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 		cout << "connection error!" << std::endl;
 		return;
 	}
-	//post get Ìá½»ĞÅÏ¢
-	//cout << "Ìá½»ĞÅÏ¢" << std::endl;
-	//cout << request << std::endl;  
+	//post get æäº¤ä¿¡æ¯
+	cout << "æäº¤ä¿¡æ¯" << std::endl;
+	cout << request << std::endl;  
+
+	//char strPost[500];
+	//sprintf_s(strPost, sizeof(strPost), request.c_str());
+
 #ifdef WIN32
+	cout << "WIN32  sendæäº¤ " << std::endl;
 	send(sockfd, request.c_str(), (int)request.size(), 0);
+	//send(sockfd, strPost, (int)sizeof(strPost), 0);
 #else
+	cout << "WIN32  writeæäº¤ " << std::endl;
 	write(sockfd, request.c_str(), request.size());
+	//write(sockfd, strPost, sizeof(strPost));
 #endif
 	//char buf[1024 * 1024] = { 0 };
 	char *buf;
@@ -61,7 +75,7 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 	int rc;
 	cout << "======================================" << std::endl;
 	 
-	cout << "·µ»ØĞÅÏ¢" << std::endl;
+	cout << "è¿”å›ä¿¡æ¯" << std::endl;
 #ifdef WIN32
 	while (rc = recv(sockfd, buf + offset, 1024, 0))
 #else
@@ -77,12 +91,12 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 	close(sockfd);
 #endif
 	buf[offset] = 0;
-	//post get Ìá½»ºó·µ»ØÀ´µÄĞÅÏ¢
-	//cout << buf << endl; 
+	//post get æäº¤åè¿”å›æ¥çš„ä¿¡æ¯
+	cout << buf << endl; 
 	string  a = buf;
 	string chstr = "authfailed";
-	int offisetpre =(int) a.find("#", 0);/*´ÓÇ°ÏòºóÕÒ*/
-	int offisetpre2 = (int)a.find(chstr, 0);/*´ÓÇ°ÏòºóÕÒ*/
+	int offisetpre =(int) a.find("#", 0);/*ä»å‰å‘åæ‰¾*/
+	int offisetpre2 = (int)a.find(chstr, 0);/*ä»å‰å‘åæ‰¾*/
 	//cout << "aaaaa: " << offisetpre << endl;
 
 	//void *isfind, *isfindstr;
@@ -96,18 +110,18 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 
 	if ((-1 == offisetpre) || (-1 == offisetpre2))
 	{
-		cout << "µÇÂ¼OK" << std::endl;
+		cout << "ç™»å½•OK" << std::endl;
 	}
 	else
 	{
-		cout << "ÓÃ»§»òÃÜÂë´íÎóÎŞ·¨µÇÂ¼" << std::endl;
+		cout << "ç”¨æˆ·æˆ–å¯†ç é”™è¯¯æ— æ³•ç™»å½•" << std::endl;
 	}
 	delete[]buf;
 }
 
 void HttpConnect::postData(std::string host, std::string path, std::string post_content)
 {
-	//POSTÇëÇó·½Ê½
+	//POSTè¯·æ±‚æ–¹å¼
 	std::stringstream stream;
 	stream << "POST " << path;
 	stream << " HTTP/1.0\r\n";
@@ -123,7 +137,7 @@ void HttpConnect::postData(std::string host, std::string path, std::string post_
 
 void HttpConnect::getData(std::string host, std::string path, std::string get_content)
 {
-	//GETÇëÇó·½Ê½
+	//GETè¯·æ±‚æ–¹å¼
 	std::stringstream stream;
 	stream << "GET " << path << "?" << get_content;
 	stream << " HTTP/1.0\r\n";
