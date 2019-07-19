@@ -35,8 +35,8 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 	SOCKET sockfd;
 	struct sockaddr_in address;
 	struct hostent *server;
-	cout << request << std::endl;
-	cout << "-------------" << std::endl;
+	//cout << request << std::endl;
+	//cout << "-------------" << std::endl;
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	//注：AF_INET（又称 PF_INET）是 IPv4 网络协议的套接字类型，AF_INET6 则是 IPv6 的；而 AF_UNIX 则是 Unix 系统本地通信。
 	//SOCK_STREAM（TCP流）
@@ -52,14 +52,14 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 		return;
 	}
 	//post get 提交信息
-	cout << "提交信息" << std::endl;
-	cout << request << std::endl;  
+	//cout << "提交信息" << std::endl;
+	//cout << request << std::endl;  
 
 	//char strPost[500];
 	//sprintf_s(strPost, sizeof(strPost), request.c_str());
 
 #ifdef WIN32
-	cout << "WIN32  send提交 " << std::endl;
+	//cout << "WIN32  send提交 " << std::endl;
 	send(sockfd, request.c_str(), (int)request.size(), 0);
 	//send(sockfd, strPost, (int)sizeof(strPost), 0);
 #else
@@ -75,7 +75,7 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 	int rc;
 	cout << "======================================" << std::endl;
 	 
-	cout << "返回信息" << std::endl;
+	//cout << "返回信息" << std::endl;
 #ifdef WIN32
 	while (rc = recv(sockfd, buf + offset, 1024, 0))
 #else
@@ -92,7 +92,7 @@ void HttpConnect::socketHttp(std::string host, std::string request)
 #endif
 	buf[offset] = 0;
 	//post get 提交后返回来的信息
-	cout << buf << endl; 
+	//cout << buf << endl; 
 	string  a = buf;
 	string chstr = "authfailed";
 	int offisetpre =(int) a.find("#", 0);/*从前向后找*/

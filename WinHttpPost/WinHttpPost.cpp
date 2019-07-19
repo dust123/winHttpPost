@@ -26,7 +26,7 @@ int main()
 	//printf("\r\n");
 	//printf(chhttpPOST);
 	printf("\r\n");
-	string strUserPW = "username=lulanglang&password=11111111+a&pwd=11111111+a&secret=true";
+	string strUserPW = "username=lulanglang&password=123456789-l&pwd=123456789-l&secret=true";
 	string strFind="+";////要查找的串，可根据要求替换
 	string strT="%2b"; 
 	size_t pos;
